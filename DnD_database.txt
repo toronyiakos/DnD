@@ -1,0 +1,747 @@
+CREATE DATABASE dnd
+	CHARACTER SET utf8mb4
+	COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.account_roles (
+  id INT(11) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 5461,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.account_users (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  pw VARCHAR(100) NOT NULL,
+  role_id INT(11) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 2,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.account_users 
+  ADD CONSTRAINT FK_users_role_id FOREIGN KEY (role_id)
+    REFERENCES dnd.account_roles(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.account_users (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  pw VARCHAR(100) NOT NULL,
+  role_id INT(11) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 2,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.account_users 
+  ADD CONSTRAINT FK_users_role_id FOREIGN KEY (role_id)
+    REFERENCES dnd.account_roles(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_alignment (
+  id SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  alignment VARCHAR(255) NOT NULL,
+  `desc` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 10,
+AVG_ROW_LENGTH = 1820,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+
+CREATE TABLE dnd.dnd5_backgrounds (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  `Skill Proficiencies` VARCHAR(255) DEFAULT NULL,
+  `Tool Proficiencies` VARCHAR(255) DEFAULT NULL,
+  Languages VARCHAR(255) DEFAULT NULL,
+  Equipment VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 14,
+AVG_ROW_LENGTH = 2978,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+
+CREATE TABLE dnd.dnd5_battle_master_maneuvers (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) DEFAULT NULL,
+  description VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 24,
+AVG_ROW_LENGTH = 744,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_characters (
+  id INT(11) NOT NULL,
+  token_id INT(11) DEFAULT NULL,
+  owner_id INT(11) DEFAULT NULL,
+  name VARCHAR(100) NOT NULL,
+  class_id INT(11) NOT NULL,
+  subclass_id INT(11) DEFAULT NULL,
+  level INT(11) UNSIGNED NOT NULL DEFAULT 1,
+  strength INT(11) UNSIGNED NOT NULL DEFAULT 10,
+  dexterity INT(11) UNSIGNED NOT NULL DEFAULT 10,
+  constitution INT(11) UNSIGNED NOT NULL DEFAULT 10,
+  intelligence INT(11) UNSIGNED NOT NULL DEFAULT 10,
+  wisidom INT(11) UNSIGNED NOT NULL DEFAULT 10,
+  charisma INT(11) UNSIGNED NOT NULL DEFAULT 10,
+  background_id INT(11) NOT NULL,
+  race_id INT(11) NOT NULL,
+  armor_class INT(11) UNSIGNED NOT NULL,
+  max_hp INT(11) UNSIGNED NOT NULL,
+  current_hp INT(11) NOT NULL,
+  speed INT(11) UNSIGNED NOT NULL DEFAULT 30,
+  hit_dice_type INT(11) UNSIGNED NOT NULL,
+  hit_dice_number INT(11) UNSIGNED NOT NULL DEFAULT 1,
+  saving_throw_str_prof TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_con_prof TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_dex_prof TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_int_prof TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_wis_prof TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_cha_prof TINYINT(1) NOT NULL DEFAULT 0,
+  item_proficiency VARCHAR(255) DEFAULT NULL,
+  weapon_proficiency VARCHAR(255) DEFAULT NULL,
+  language VARCHAR(255) NOT NULL DEFAULT 'common',
+  description VARCHAR(100) DEFAULT NULL,
+  money INT(11) NOT NULL,
+  `Acrobatics(dex)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Animal_Handling(wis)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Arcana(int)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Athletics(str)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Deception(cha)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `History(int)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Insight(wis)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Intimidation(cha)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Investigation(int)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Medicine(wis)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Nature(wis)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Perception(wis)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Perforance(cha)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Persuasion(cha)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Religion(int)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Sleight_of_Hand(dex)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Stealth(dex)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Survival(wis)_prof` TINYINT(1) NOT NULL DEFAULT 0,
+  `Acrobatics(dex)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Animal_Handling(wis)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Arcana(int)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Athletics(str)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Deception(cha)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `History(int)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Insight(wis)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Intimidation(cha)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Investigation(int)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Medicine(wis)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Nature(wis)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Perception(wis)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Perforance(cha)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Persuasion(cha)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Religion(int)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Sleight_of_Hand(dex)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Stealth(dex)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  `Survival(wis)_exp` TINYINT(1) NOT NULL DEFAULT 0,
+  jack_of_all_trades TINYINT(1) NOT NULL DEFAULT 0,
+  `asi(4)_id` INT(11) DEFAULT NULL,
+  `asi(6)_id` INT(11) DEFAULT NULL,
+  `asi(8)_id` INT(11) DEFAULT NULL,
+  `asi(12)_id` INT(11) DEFAULT NULL,
+  `asi(14)_id` INT(11) DEFAULT NULL,
+  `asi(16)_id` INT(11) DEFAULT NULL,
+  `asi(19)_id` INT(11) DEFAULT NULL,
+  alignment_id SMALLINT(6) NOT NULL,
+  size_id SMALLINT(6) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_alignment FOREIGN KEY (alignment_id)
+    REFERENCES dnd.dnd5_alignment(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(12)_id` FOREIGN KEY (`asi(12)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(14)_id` FOREIGN KEY (`asi(14)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(16)_id` FOREIGN KEY (`asi(16)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(19)_id` FOREIGN KEY (`asi(19)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(4)_id` FOREIGN KEY (`asi(4)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(6)_id` FOREIGN KEY (`asi(6)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT `FK_dnd5_characters_asi(8)_id` FOREIGN KEY (`asi(8)_id`)
+    REFERENCES dnd.dnd5_feats(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_background_id FOREIGN KEY (background_id)
+    REFERENCES dnd.dnd5_backgrounds(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_class_id FOREIGN KEY (class_id)
+    REFERENCES dnd.dnd5_classes(class_id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_owner_id FOREIGN KEY (owner_id)
+    REFERENCES dnd.account_users(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_race_id FOREIGN KEY (race_id)
+    REFERENCES dnd.dnd5_races(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_size_id FOREIGN KEY (size_id)
+    REFERENCES dnd.dnd5_size(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_subclass_id FOREIGN KEY (subclass_id)
+    REFERENCES dnd.dnd5_subclass_name(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_characters 
+  ADD CONSTRAINT FK_dnd5_characters_token_id FOREIGN KEY (token_id)
+    REFERENCES dnd.map_tokens(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_classes (
+  class_id INT(11) NOT NULL AUTO_INCREMENT,
+  class_name VARCHAR(9) NOT NULL,
+  hit_die INT(11) NOT NULL,
+  armor_prof VARCHAR(255) DEFAULT NULL,
+  weapon_prof VARCHAR(255) DEFAULT NULL,
+  tool_prof VARCHAR(255) DEFAULT NULL,
+  skill_prof VARCHAR(255) DEFAULT NULL,
+  saving_throw_str TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_dex TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_con TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_int TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_wis TINYINT(1) NOT NULL DEFAULT 0,
+  saving_throw_cha TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (class_id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 13,
+AVG_ROW_LENGTH = 1365,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+
+CREATE TABLE dnd.dnd5_class_skills (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  subclass_id INT(11) DEFAULT NULL,
+  class_id INT(11) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  `desc` TEXT NOT NULL,
+  unlock_level SMALLINT(6) NOT NULL DEFAULT 1,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 488,
+AVG_ROW_LENGTH = 552,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_class_skills 
+  ADD CONSTRAINT FK_céass_skills_class_id FOREIGN KEY (class_id)
+    REFERENCES dnd.dnd5_classes(class_id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_class_skills 
+  ADD CONSTRAINT FK_dnd5_class_skills_subclass_id FOREIGN KEY (subclass_id)
+    REFERENCES dnd.dnd5_subclass_name(id) ON DELETE NO ACTION;
+
+
+CREATE TABLE dnd.dnd5_class_spells (
+  class_id INT(2) NOT NULL,
+  spell_id INT(4) NOT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 77,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_class_spells 
+  ADD CONSTRAINT FK_dnd5_class_spells_class_id FOREIGN KEY (class_id)
+    REFERENCES dnd.dnd5_classes(class_id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_class_spells 
+  ADD CONSTRAINT FK_dnd5_class_spells_spell_id FOREIGN KEY (spell_id)
+    REFERENCES dnd.dnd5_spells(spell_id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_draconic_ancestry (
+  color VARCHAR(255) DEFAULT NULL,
+  damage_type VARCHAR(255) DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 1820,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_druid_form_limit (
+  level INT(11) DEFAULT NULL,
+  max_cr VARCHAR(255) DEFAULT NULL,
+  limitation VARCHAR(255) DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 5461,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_eldricht_invocations (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  min_level INT(11) DEFAULT NULL,
+  Prerequisite VARCHAR(255) DEFAULT NULL,
+  effect TEXT NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 55,
+AVG_ROW_LENGTH = 321,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_feats (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  `desc` TEXT NOT NULL,
+  Prerequisite VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 34,
+AVG_ROW_LENGTH = 496,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_fighting_styles (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) DEFAULT NULL,
+  effect VARCHAR(255) DEFAULT NULL,
+  fighter TINYINT(1) NOT NULL DEFAULT 0,
+  paladin TINYINT(1) NOT NULL DEFAULT 0,
+  ranger TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 12,
+AVG_ROW_LENGTH = 2048,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_inventory (
+  player_id INT(11) NOT NULL,
+  item_id INT(11) NOT NULL
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_inventory 
+  ADD CONSTRAINT FK_dnd5_inventory_item_id FOREIGN KEY (item_id)
+    REFERENCES dnd.dnd5_items(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_inventory 
+  ADD CONSTRAINT FK_dnd5_inventory_player_id FOREIGN KEY (player_id)
+    REFERENCES dnd.dnd5_characters(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_items (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  type_id SMALLINT(6) NOT NULL,
+  rarity_id SMALLINT(6) NOT NULL,
+  price INT(11) DEFAULT NULL,
+  `desc` VARCHAR(255) NOT NULL,
+  attuned TINYINT(1) NOT NULL DEFAULT 0,
+  weight INT(11) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 3,
+AVG_ROW_LENGTH = 8192,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_items 
+  ADD CONSTRAINT FK_dnd5_items_rarity_id FOREIGN KEY (rarity_id)
+    REFERENCES dnd.dnd5_item_rarity(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_items 
+  ADD CONSTRAINT FK_dnd5_items_type_id FOREIGN KEY (type_id)
+    REFERENCES dnd.dnd5_item_types(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_item_rarity (
+  id SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 7,
+AVG_ROW_LENGTH = 2730,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_item_types (
+  id SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 10,
+AVG_ROW_LENGTH = 1820,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_land_druid_domains (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 9,
+AVG_ROW_LENGTH = 2048,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_land_druid_domain_spells (
+  land_id INT(11) DEFAULT NULL,
+  level INT(11) DEFAULT NULL,
+  spells VARCHAR(255) DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 512,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_land_druid_domain_spells 
+  ADD CONSTRAINT FK_land_druid_domain_spells_land_id FOREIGN KEY (land_id)
+    REFERENCES dnd.dnd5_land_druid_domains(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_metamagic (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) DEFAULT NULL,
+  `desc` TEXT DEFAULT NULL,
+  cost INT(11) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 11,
+AVG_ROW_LENGTH = 1820,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_monsters (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  token_id INT(11) DEFAULT NULL,
+  armor_class INT(11) NOT NULL,
+  hp INT(11) NOT NULL,
+  speed SMALLINT(6) NOT NULL,
+  speed_fly SMALLINT(6) NOT NULL DEFAULT 0,
+  speed_burrow SMALLINT(6) NOT NULL DEFAULT 0,
+  str SMALLINT(6) NOT NULL,
+  dex SMALLINT(6) NOT NULL,
+  con SMALLINT(6) NOT NULL,
+  `int` SMALLINT(6) NOT NULL,
+  wis SMALLINT(6) NOT NULL,
+  cha SMALLINT(6) NOT NULL,
+  size_id SMALLINT(6) NOT NULL,
+  type_id SMALLINT(6) NOT NULL,
+  alignment_id SMALLINT(6) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 2,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_monsters 
+  ADD CONSTRAINT FK_dnd5_monster_token_id FOREIGN KEY (token_id)
+    REFERENCES dnd.map_tokens(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_monsters 
+  ADD CONSTRAINT FK_dnd5_monsters_alignment_id FOREIGN KEY (alignment_id)
+    REFERENCES dnd.dnd5_alignment(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_monsters 
+  ADD CONSTRAINT FK_dnd5_monsters_size_id FOREIGN KEY (size_id)
+    REFERENCES dnd.dnd5_size(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_monsters 
+  ADD CONSTRAINT FK_dnd5_monsters_type_id FOREIGN KEY (type_id)
+    REFERENCES dnd.dnd5_monster_types(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_monster_types (
+  id SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 17,
+AVG_ROW_LENGTH = 1024,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_races (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  age VARCHAR(255) NOT NULL,
+  alignment VARCHAR(255) NOT NULL,
+  size VARCHAR(255) NOT NULL,
+  speed_walk SMALLINT(6) NOT NULL DEFAULT 30,
+  speed_fly SMALLINT(6) NOT NULL DEFAULT 0,
+  speed_burrow SMALLINT(6) NOT NULL DEFAULT 0,
+  language VARCHAR(255) NOT NULL,
+  lore TEXT NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 10,
+AVG_ROW_LENGTH = 2048,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_racials (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  race_id INT(11) NOT NULL,
+  subrace_id INT(11) DEFAULT NULL,
+  name VARCHAR(100) DEFAULT NULL,
+  `desc` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 79,
+AVG_ROW_LENGTH = 8192,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_racials 
+  ADD CONSTRAINT FK_dnd5_racials_subrace_id FOREIGN KEY (subrace_id)
+    REFERENCES dnd.dnd5_subrace(id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_racials 
+  ADD CONSTRAINT FK_dnd_racials_race_id FOREIGN KEY (race_id)
+    REFERENCES dnd.dnd5_races(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_size (
+  id SMALLINT(6) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  space VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 7,
+AVG_ROW_LENGTH = 2730,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.`dnd5_sneak_attack(d6)` (
+  level INT(2) DEFAULT NULL,
+  damage INT(2) DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 819,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_sorcery_point_conversation (
+  spell_slot_level INT(11) NOT NULL,
+  sorcery_point_cost INT(11) NOT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 3276,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_spells (
+  spell_id INT(11) NOT NULL AUTO_INCREMENT,
+  spell_name VARCHAR(128) NOT NULL,
+  spell_level INT(2) NOT NULL,
+  spell_type VARCHAR(128) NOT NULL,
+  casting_time VARCHAR(128) NOT NULL,
+  spell_range VARCHAR(128) NOT NULL,
+  components VARCHAR(128) NOT NULL,
+  duration VARCHAR(128) NOT NULL,
+  description TEXT NOT NULL,
+  higher_levels TEXT NOT NULL,
+  PRIMARY KEY (spell_id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 362,
+AVG_ROW_LENGTH = 544,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_spell_slots (
+  class_id INT(11) NOT NULL,
+  subclass_id INT(11) DEFAULT NULL,
+  level INT(11) NOT NULL,
+  spells_known INT(11) DEFAULT NULL,
+  cantrip INT(11) DEFAULT NULL,
+  `1st` INT(11) DEFAULT NULL,
+  `2nd` INT(11) DEFAULT NULL,
+  `3rd` INT(11) DEFAULT NULL,
+  `4th` INT(11) DEFAULT NULL,
+  `5th` INT(11) DEFAULT NULL,
+  `6th` INT(11) DEFAULT NULL,
+  `7th` INT(11) DEFAULT NULL,
+  `8th` INT(11) DEFAULT NULL,
+  `9th` INT(11) DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 185,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_spell_slots 
+  ADD CONSTRAINT FK_dnd5_spell_slots_class_id FOREIGN KEY (class_id)
+    REFERENCES dnd.dnd5_classes(class_id) ON DELETE NO ACTION;
+
+ALTER TABLE dnd.dnd5_spell_slots 
+  ADD CONSTRAINT FK_dnd5_spell_slots_subclass_id FOREIGN KEY (subclass_id)
+    REFERENCES dnd.dnd5_subclass_name(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_subclass_name (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  main_class_id INT(11) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 41,
+AVG_ROW_LENGTH = 442,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_subclass_name 
+  ADD CONSTRAINT FK_dnd5_subclass_name_main_class_id FOREIGN KEY (main_class_id)
+    REFERENCES dnd.dnd5_classes(class_id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_subrace (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  race_id INT(11) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  lore TEXT DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 29,
+AVG_ROW_LENGTH = 910,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+ALTER TABLE dnd.dnd5_subrace 
+  ADD CONSTRAINT FK_subrace_race_id FOREIGN KEY (race_id)
+    REFERENCES dnd.dnd5_races(id) ON DELETE NO ACTION;
+
+CREATE TABLE dnd.dnd5_warlock_pact_boons (
+  name VARCHAR(100) DEFAULT NULL,
+  effect1 TEXT DEFAULT NULL,
+  effect2 TEXT DEFAULT NULL,
+  effect3 TEXT DEFAULT NULL,
+  effect4 TEXT DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 4096,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_warlock_spell_level (
+  level INT(11) DEFAULT NULL,
+  cantrips_known INT(11) DEFAULT NULL,
+  spells_known INT(11) DEFAULT NULL,
+  spell_slots INT(11) DEFAULT NULL,
+  spell_slot_level INT(11) DEFAULT NULL,
+  `invocations:known` INT(11) DEFAULT NULL
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 862,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_wild_magic_surge (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  d100_range VARCHAR(255) DEFAULT NULL,
+  effect VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 51,
+AVG_ROW_LENGTH = 364,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.dnd5_profbylevel (
+  level VARCHAR(255) NOT NULL,
+  bonus VARCHAR(255) NOT NULL,
+  PRIMARY KEY (level)
+)
+ENGINE = INNODB,
+AVG_ROW_LENGTH = 862,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.map_battlemap (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  tags VARCHAR(255) DEFAULT NULL,
+  map_path VARCHAR(256) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.map_scenes (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name VARBINARY(255) NOT NULL,
+  tags VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.map_scene_items (
+  scene_id INT(11) DEFAULT NULL,
+  token_id INT(11) DEFAULT NULL,
+  position_x DOUBLE DEFAULT NULL,
+  position_y DOUBLE DEFAULT NULL
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+CREATE TABLE dnd.map_tokens (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  token_path VARCHAR(256) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
