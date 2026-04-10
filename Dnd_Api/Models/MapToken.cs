@@ -16,4 +16,10 @@ public partial class MapToken
     [Column("token_path")]
     [StringLength(256)]
     public string? TokenPath { get; set; }
+
+    [InverseProperty("Token")]
+    public virtual ICollection<Dnd5Character> Dnd5Characters { get; set; } = new List<Dnd5Character>();
+
+    [InverseProperty("Token")]
+    public virtual ICollection<Dnd5Monster> Dnd5Monsters { get; set; } = new List<Dnd5Monster>();
 }

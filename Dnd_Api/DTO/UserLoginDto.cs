@@ -1,9 +1,8 @@
 ﻿namespace Dnd_Api.DTO
 {
-	public class UserRegisterDto
+	public class UserLoginDto
 	{
 		public string Name { get; set; } = "";
 		public string Password { get; set; } = "";
-		public int RoleId { get; set; } = 0;
 	}
 }

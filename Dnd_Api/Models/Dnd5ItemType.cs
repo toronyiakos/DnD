@@ -16,4 +16,7 @@ public partial class Dnd5ItemType
     [Column("name")]
     [StringLength(100)]
     public string Name { get; set; } = null!;
+
+    [InverseProperty("Type")]
+    public virtual ICollection<Dnd5Item> Dnd5Items { get; set; } = new List<Dnd5Item>();
 }

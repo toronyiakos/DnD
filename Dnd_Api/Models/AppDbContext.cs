@@ -166,6 +166,16 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK_dnd5_characters_class_id");
 
             entity.HasOne(d => d.Owner).WithMany(p => p.Dnd5Characters).HasConstraintName("FK_dnd5_characters_owner_id");
+
+            entity.HasOne(d => d.Race).WithMany(p => p.Dnd5Characters)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_characters_race_id");
+
+            entity.HasOne(d => d.Size).WithMany(p => p.Dnd5Characters)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_characters_size_id");
+
+            entity.HasOne(d => d.Token).WithMany(p => p.Dnd5Characters).HasConstraintName("FK_dnd5_characters_token_id");
         });
 
         modelBuilder.Entity<Dnd5Class>(entity =>
@@ -189,6 +199,10 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Class).WithMany()
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_dnd5_class_spells_class_id");
+
+            entity.HasOne(d => d.Spell).WithMany()
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_class_spells_spell_id");
         });
 
         modelBuilder.Entity<Dnd5EldrichtInvocation>(entity =>
@@ -208,6 +222,10 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Dnd5Inventory>(entity =>
         {
+            entity.HasOne(d => d.Item).WithMany()
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_inventory_item_id");
+
             entity.HasOne(d => d.Player).WithMany()
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_dnd5_inventory_player_id");
@@ -216,6 +234,14 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Dnd5Item>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Rarity).WithMany(p => p.Dnd5Items)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_items_rarity_id");
+
+            entity.HasOne(d => d.Type).WithMany(p => p.Dnd5Items)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_items_type_id");
         });
 
         modelBuilder.Entity<Dnd5ItemRarity>(entity =>
@@ -250,6 +276,16 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Alignment).WithMany(p => p.Dnd5Monsters)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_dnd5_monsters_alignment_id");
+
+            entity.HasOne(d => d.Size).WithMany(p => p.Dnd5Monsters)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_monsters_size_id");
+
+            entity.HasOne(d => d.Token).WithMany(p => p.Dnd5Monsters).HasConstraintName("FK_dnd5_monsters_token_id");
+
+            entity.HasOne(d => d.Type).WithMany(p => p.Dnd5Monsters)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_dnd5_monsters_type_id");
         });
 
         modelBuilder.Entity<Dnd5MonsterType>(entity =>

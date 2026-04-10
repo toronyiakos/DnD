@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Dnd_Api.Models;
 
 [Table("dnd5_items")]
+[Index("RarityId", Name = "FK_dnd5_items_rarity_id")]
+[Index("TypeId", Name = "FK_dnd5_items_type_id")]
 public partial class Dnd5Item
 {
     [Key]
@@ -35,4 +37,12 @@ public partial class Dnd5Item
 
     [Column("weight", TypeName = "int(11)")]
     public int Weight { get; set; }
+
+    [ForeignKey("RarityId")]
+    [InverseProperty("Dnd5Items")]
+    public virtual Dnd5ItemRarity Rarity { get; set; } = null!;
+
+    [ForeignKey("TypeId")]
+    [InverseProperty("Dnd5Items")]
+    public virtual Dnd5ItemType Type { get; set; } = null!;
 }

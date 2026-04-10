@@ -11,6 +11,9 @@ namespace Dnd_Api.Models;
 [Index("BackgroundId", Name = "FK_dnd5_characters_background_id")]
 [Index("ClassId", Name = "FK_dnd5_characters_class_id")]
 [Index("OwnerId", Name = "FK_dnd5_characters_owner_id")]
+[Index("RaceId", Name = "FK_dnd5_characters_race_id")]
+[Index("SizeId", Name = "FK_dnd5_characters_size_id")]
+[Index("TokenId", Name = "FK_dnd5_characters_token_id")]
 public partial class Dnd5Character
 {
     [Key]
@@ -268,4 +271,16 @@ public partial class Dnd5Character
     [ForeignKey("OwnerId")]
     [InverseProperty("Dnd5Characters")]
     public virtual AccountUser? Owner { get; set; }
+
+    [ForeignKey("RaceId")]
+    [InverseProperty("Dnd5Characters")]
+    public virtual Dnd5Race Race { get; set; } = null!;
+
+    [ForeignKey("SizeId")]
+    [InverseProperty("Dnd5Characters")]
+    public virtual Dnd5Size Size { get; set; } = null!;
+
+    [ForeignKey("TokenId")]
+    [InverseProperty("Dnd5Characters")]
+    public virtual MapToken? Token { get; set; }
 }

@@ -16,4 +16,7 @@ public partial class Dnd5MonsterType
     [Column("name")]
     [StringLength(100)]
     public string? Name { get; set; }
+
+    [InverseProperty("Type")]
+    public virtual ICollection<Dnd5Monster> Dnd5Monsters { get; set; } = new List<Dnd5Monster>();
 }

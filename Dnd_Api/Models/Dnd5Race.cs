@@ -46,6 +46,9 @@ public partial class Dnd5Race
     public string Lore { get; set; } = null!;
 
     [InverseProperty("Race")]
+    public virtual ICollection<Dnd5Character> Dnd5Characters { get; set; } = new List<Dnd5Character>();
+
+    [InverseProperty("Race")]
     public virtual ICollection<Dnd5Racial> Dnd5Racials { get; set; } = new List<Dnd5Racial>();
 
     [InverseProperty("Race")]

@@ -25,11 +25,18 @@ namespace Dnd_Api.Controllers
 			if (await _db.AccountUsers.AnyAsync(u => u.Name == dto.Name))
 				return BadRequest(new { message = "Name already exists" });
 
+			if (string.IsNullOrEmpty(dto.Name))
+				return BadRequest(new { message = "Name is required"});
+			if (string.IsNullOrEmpty(dto.Password))
+				return BadRequest(new { message = "Password is required" });
+			if (dto.Password.Length < 6)
+				return BadRequest(new { message = "Password is short" });
+
 			var user = new AccountUser
 			{
 				Name = dto.Name,
 				Pw = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-				RoleId = 0
+				RoleId = dto.RoleId
 			};
 			_db.AccountUsers.Add(user);
 			await _db.SaveChangesAsync();
@@ -38,8 +45,13 @@ namespace Dnd_Api.Controllers
 		}
 
 		[HttpPost("login")]
-		public async Task<IActionResult> Login([FromBody] UserRegisterDto dto)
+		public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
 		{
+			if (string.IsNullOrEmpty(dto.Name))
+				return BadRequest(new { message = "Name is required" });
+			if (string.IsNullOrEmpty(dto.Password))
+				return BadRequest(new { message = "Password is required" });
+
 			var user = await _db.AccountUsers.Include(u => u.Role)
 				.FirstOrDefaultAsync(u => u.Name == dto.Name);
 			if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Pw))

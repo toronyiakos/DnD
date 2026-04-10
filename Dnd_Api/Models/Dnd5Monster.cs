@@ -8,6 +8,9 @@ namespace Dnd_Api.Models;
 
 [Table("dnd5_monsters")]
 [Index("AlignmentId", Name = "FK_dnd5_monsters_alignment_id")]
+[Index("SizeId", Name = "FK_dnd5_monsters_size_id")]
+[Index("TokenId", Name = "FK_dnd5_monsters_token_id")]
+[Index("TypeId", Name = "FK_dnd5_monsters_type_id")]
 public partial class Dnd5Monster
 {
     [Key]
@@ -66,4 +69,16 @@ public partial class Dnd5Monster
     [ForeignKey("AlignmentId")]
     [InverseProperty("Dnd5Monsters")]
     public virtual Dnd5Alignment Alignment { get; set; } = null!;
+
+    [ForeignKey("SizeId")]
+    [InverseProperty("Dnd5Monsters")]
+    public virtual Dnd5Size Size { get; set; } = null!;
+
+    [ForeignKey("TokenId")]
+    [InverseProperty("Dnd5Monsters")]
+    public virtual MapToken? Token { get; set; }
+
+    [ForeignKey("TypeId")]
+    [InverseProperty("Dnd5Monsters")]
+    public virtual Dnd5MonsterType Type { get; set; } = null!;
 }

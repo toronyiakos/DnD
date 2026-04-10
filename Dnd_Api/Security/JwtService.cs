@@ -18,7 +18,7 @@ namespace Dnd_Api.Security
 			var claims = new[]
 			{
 				new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-				new Claim(JwtRegisteredClaimNames.Email, name),
+				new Claim(JwtRegisteredClaimNames.Name, name),
 				new Claim(ClaimTypes.Role,role)
 			};
 

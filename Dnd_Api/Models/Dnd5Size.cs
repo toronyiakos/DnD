@@ -20,4 +20,10 @@ public partial class Dnd5Size
     [Column("space")]
     [StringLength(255)]
     public string Space { get; set; } = null!;
+
+    [InverseProperty("Size")]
+    public virtual ICollection<Dnd5Character> Dnd5Characters { get; set; } = new List<Dnd5Character>();
+
+    [InverseProperty("Size")]
+    public virtual ICollection<Dnd5Monster> Dnd5Monsters { get; set; } = new List<Dnd5Monster>();
 }

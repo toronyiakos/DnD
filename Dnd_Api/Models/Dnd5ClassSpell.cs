@@ -9,6 +9,7 @@ namespace Dnd_Api.Models;
 [Keyless]
 [Table("dnd5_class_spells")]
 [Index("ClassId", Name = "FK_dnd5_class_spells_class_id")]
+[Index("SpellId", Name = "FK_dnd5_class_spells_spell_id")]
 public partial class Dnd5ClassSpell
 {
     [Column("class_id", TypeName = "int(2)")]
@@ -19,4 +20,7 @@ public partial class Dnd5ClassSpell
 
     [ForeignKey("ClassId")]
     public virtual Dnd5Class Class { get; set; } = null!;
+
+    [ForeignKey("SpellId")]
+    public virtual Dnd5Spell Spell { get; set; } = null!;
 }
