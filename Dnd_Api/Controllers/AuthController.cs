@@ -1,8 +1,10 @@
 ﻿using Dnd_Api.DTO;
 using Dnd_Api.Models;
-using Dnd_Api.Security;
+using Dnd_Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Dnd_Api.Controllers
 {
@@ -10,57 +12,62 @@ namespace Dnd_Api.Controllers
 	[Route("api/[controller]")]
 	public class AuthController : ControllerBase
 	{
+		private readonly IAuthService _auth;
 		private readonly AppDbContext _db;
-		private readonly JwtService _jwt;
 
-		public AuthController(AppDbContext db, JwtService jwt)
+		public AuthController(IAuthService auth, AppDbContext db)
 		{
+			_auth = auth;
 			_db = db;
-			_jwt = jwt;
 		}
 
-		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
+		[HttpGet("authcheck")]
+		public IActionResult AuthCheck()
 		{
-			if (await _db.AccountUsers.AnyAsync(u => u.Name == dto.Name))
-				return BadRequest(new { message = "Name already exists" });
-
-			if (string.IsNullOrEmpty(dto.Name))
-				return BadRequest(new { message = "Name is required"});
-			if (string.IsNullOrEmpty(dto.Password))
-				return BadRequest(new { message = "Password is required" });
-			if (dto.Password.Length < 6)
-				return BadRequest(new { message = "Password is short" });
-
-			var user = new AccountUser
+			var principal = User;
+			foreach (var claim in principal.Claims)
 			{
-				Name = dto.Name,
-				Pw = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-				RoleId = dto.RoleId
-			};
-			_db.AccountUsers.Add(user);
-			await _db.SaveChangesAsync();
+				Console.WriteLine(claim.Type + " : " + claim.Value);
+			}
+			return Ok(new
+			{
+				Authenticated = User.Identity?.IsAuthenticated,
+				Claims = User.Claims.Select(x => new { x.Type, x.Value })
+			});
+		}
 
-			return Ok(new { message = "User registered" });
+
+
+		[HttpPost("register")]
+		[ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+		{
+			if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Password))
+				return BadRequest("Name and Password are required.");
+
+			var result = await _auth.RegisterAsync(dto);
+
+			if (result is null)
+				return Conflict("Username already taken.");
+
+			return CreatedAtAction(nameof(Register), result);
 		}
 
 		[HttpPost("login")]
-		public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
+		[ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		public async Task<IActionResult> Login([FromBody] LoginDto dto)
 		{
-			if (string.IsNullOrEmpty(dto.Name))
-				return BadRequest(new { message = "Name is required" });
-			if (string.IsNullOrEmpty(dto.Password))
-				return BadRequest(new { message = "Password is required" });
+			if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Password))
+				return BadRequest("Name and Password are required.");
 
-			var user = await _db.AccountUsers.Include(u => u.Role)
-				.FirstOrDefaultAsync(u => u.Name == dto.Name);
-			if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Pw))
-				return Unauthorized();
+			var result = await _auth.LoginAsync(dto);
 
-			var role = user.Role.Name ?? "User";
-			var token = _jwt.GenerateToken(user.Id, user.Name, role);
+			if (result is null)
+				return Unauthorized("Invalid credentials.");
 
-			return Ok(new { token });
+			return Ok(result);
 		}
 	}
 }

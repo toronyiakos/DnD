@@ -141,7 +141,6 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Charisma).HasDefaultValueSql("'10'");
             entity.Property(e => e.Constitution).HasDefaultValueSql("'10'");
             entity.Property(e => e.Dexterity).HasDefaultValueSql("'10'");

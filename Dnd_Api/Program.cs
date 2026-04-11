@@ -1,6 +1,6 @@
 
 using Dnd_Api.Models;
-using Dnd_Api.Security;
+using Dnd_Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,42 +22,53 @@ internal class Program
 			)
 		);
 		
-		builder.Services.AddScoped<JwtService>();
 
-		builder.Services
-			.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-			.AddJwtBearer(options =>
+		builder.Services.AddAuthentication(options =>
+		{
+			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+		})
+		.AddJwtBearer(options =>
+		{
+			var jwt = builder.Configuration.GetSection("Jwt");
+
+			options.TokenValidationParameters = new TokenValidationParameters
 			{
-				options.SaveToken = true;
-				options.TokenValidationParameters = new TokenValidationParameters
-				{
-					ValidateIssuer = true,
-					ValidateAudience = true,
-					ValidateLifetime = true,
-					ValidateIssuerSigningKey = true,
-					ValidIssuer = builder.Configuration["Jwt:Issuer"],
-					ValidAudience = builder.Configuration["Jwt:Audience"],
-					IssuerSigningKey = new SymmetricSecurityKey(
-						Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-				};
-			});
+				ValidateIssuer = true,
+				ValidateAudience = true,
+				ValidateLifetime = true,
+				ValidateIssuerSigningKey = true,
+				ValidIssuer = jwt["Issuer"],
+				ValidAudience = jwt["Audience"],
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
+			};
+		});
 
-		builder.Services.AddAuthorization();
+		builder.Services.AddAuthorization(options =>
+		{
+			options.AddPolicy("UserOnly", p => p.RequireRole("user", "game_master", "admin"));
+			options.AddPolicy("GameMasterOnly", p => p.RequireRole("game_master", "admin"));
+			options.AddPolicy("AdminOnly", p => p.RequireRole("admin"));
+		});
 
-		builder.Services.AddControllers();
+
+		builder.Services.AddScoped<IJwtService, JwtService>();
+		builder.Services.AddScoped<IAuthService, AuthService>();
+
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen(options =>
 		{
-			options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+			var securityScheme = new OpenApiSecurityScheme
 			{
-				Description = "JWT Authorization header. Example: Bearer {token}",
 				Name = "Authorization",
+				Description = "Enter: Bearer {token}",
 				In = ParameterLocation.Header,
 				Type = SecuritySchemeType.Http,
-				Scheme = "bearer",
+				Scheme = "Bearer",
 				BearerFormat = "JWT"
-			});
+			};
+			options.AddSecurityDefinition("Bearer", securityScheme);
 			options.AddSecurityRequirement(new OpenApiSecurityRequirement
 			{
 				{
@@ -65,13 +76,15 @@ internal class Program
 					{
 						Reference = new OpenApiReference
 						{
-							Type=ReferenceType.SecurityScheme,
-							Id="Bearer"
+							Type = ReferenceType.SecurityScheme,
+							Id = "Bearer"
 						}
 				}, new string[]{}
 			}
 	});
 		});
+
+		builder.Services.AddControllers();
 
 		var app = builder.Build();
 
