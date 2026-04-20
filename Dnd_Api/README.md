@@ -26,11 +26,11 @@ dotnet user-secrets set "Jwt:Secret" "your-super-secret-key"
 dotnet run
 ```
 
-API URL: `http://localhost:5000`
+API URL: `http://localhost:5000`  
 Swagger UI: `http://localhost:5000/swagger`
 
 ### Production Environment Variables
-ConnectionStrings__Default=...
+ConnectionStrings__Default=...  
 Jwt__Secret=...
 
 ## Project Structure
@@ -146,9 +146,11 @@ Sensitive data (passwords, tokens, connection strings) are not stored in source 
 - Proper HTTP status codes
 
 ### Example
+```
 {
   "message": "internal_server_error"
 }
+```
 
 ---
 
