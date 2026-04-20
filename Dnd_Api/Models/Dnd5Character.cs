@@ -26,6 +26,8 @@ public partial class Dnd5Character
     [Column("owner_id", TypeName = "int(11)")]
     public int? OwnerId { get; set; }
 
+    public virtual ICollection<Dnd5Inventory> Inventories { get; set; } = new List<Dnd5Inventory>();
+
     [Column("name")]
     [StringLength(100)]
     public string Name { get; set; } = null!;
@@ -37,7 +39,7 @@ public partial class Dnd5Character
     public int? SubclassId { get; set; }
 
     [Column("level", TypeName = "int(11) unsigned")]
-    public uint Level { get; set; }
+    public int Level { get; set; }
 
     [Column("strength", TypeName = "int(11) unsigned")]
     public uint Strength { get; set; }

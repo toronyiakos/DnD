@@ -4,6 +4,7 @@ using Dnd_Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace Dnd_Api.Controllers
@@ -16,51 +17,18 @@ namespace Dnd_Api.Controllers
 		private readonly AppDbContext _db;
 		private readonly IJwtService _jwt;
 
-		public CharactersController(AppDbContext db, IJwtService jwt)
+		private readonly IStringLocalizer<CharactersController> _localizer;
+
+		public CharactersController(AppDbContext db, IJwtService jwt, IStringLocalizer<CharactersController> localizer)
 		{
 			_db = db;
 			_jwt = jwt;
+			_localizer = localizer;
 		}
 
 		private int CurrentUserId => _jwt.GetUserIdFromToken(User);
 		private string CurrentUserRole => _jwt.GetRoleFromToken(User);
 		private bool IsPrivileged => CurrentUserRole is "game_master" or "admin";
-
-		private static CharacterDetailDto ToDetail(Dnd5Character c) => new(
-			c.Id, c.OwnerId, c.Name,
-			c.ClassId, c.Class.ClassName,
-			c.SubclassId,
-			c.Level,
-			c.Strength, c.Dexterity, c.Constitution,
-			c.Intelligence, c.Wisidom, c.Charisma,
-			c.BackgroundId, c.Background.Name,
-			c.RaceId, c.Race.Name,
-			c.ArmorClass, c.MaxHp, c.CurrentHp, c.Speed,
-			c.HitDiceType, c.HitDiceNumber,
-			c.Alignment.Alignment, c.Size.Name,
-			c.Money, c.Language, c.Description,
-			new SkillsDto(
-				c.AcrobaticsDexProf, c.AcrobaticsDexExp,
-				c.AnimalHandlingWisProf, c.AnimalHandlingWisExp,
-				c.ArcanaIntProf, c.ArcanaIntExp,
-				c.AthleticsStrProf, c.AthleticsStrExp,
-				c.DeceptionChaProf, c.DeceptionChaExp,
-				c.HistoryIntProf, c.HistoryIntExp,
-				c.InsightWisProf, c.InsightWisExp,
-				c.IntimidationChaProf, c.IntimidationChaExp,
-				c.InvestigationIntProf, c.InvestigationIntExp,
-				c.MedicineWisProf, c.MedicineWisExp,
-				c.NatureWisProf, c.NatureWisExp,
-				c.PerceptionWisProf, c.PerceptionWisExp,
-				c.PerforanceChaProf, c.PersuasionChaExp,
-				c.PersuasionChaProf, c.PersuasionChaExp,
-				c.ReligionIntProf, c.ReligionIntExp,
-				c.SleightOfHandDexProf, c.SleightOfHandDexExp,
-				c.StealthDexProf, c.StealthDexExp,
-				c.SurvivalWisProf, c.SurvivalWisExp,
-				c.JackOfAllTrades
-			)
-		);
 
 		private IQueryable<Dnd5Character> BaseQuery() =>
 			_db.Dnd5Characters
@@ -92,19 +60,90 @@ namespace Dnd_Api.Controllers
 			return Ok(list);
 		}
 
-
 		[HttpGet("{id:int}")]
 		public async Task<IActionResult> GetById(int id)
 		{
-			var character = await BaseQuery().FirstOrDefaultAsync(c => c.Id == id);
-			if (character is null) return NotFound("Character not found.");
+			var character = await _db.Dnd5Characters
+				.Where(c => c.Id == id)
+				.Include(c => c.Class)
+				.Include(c => c.Background)
+				.Include(c => c.Race)
+				.Include(c => c.Alignment)
+				.Include(c => c.Size)
+				.Select(c => new CharacterDetailDto(
+					c.Id,
+					c.OwnerId,
+					c.Name,
+
+					c.ClassId,
+					c.Class.ClassName,
+
+					c.SubclassId,
+					_db.Dnd5SubclassNames
+						.Where(s => s.Id == c.SubclassId)
+						.Select(s => s.Name)
+						.FirstOrDefault(),
+
+					c.Level,
+					c.Strength,
+					c.Dexterity,
+					c.Constitution,
+					c.Intelligence,
+					c.Wisidom,
+					c.Charisma,
+
+					c.BackgroundId,
+					c.Background.Name,
+
+					c.RaceId,
+					c.Race.Name,
+
+					c.ArmorClass,
+					c.MaxHp,
+					c.CurrentHp,
+					c.Speed,
+					c.HitDiceType,
+					c.HitDiceNumber,
+
+					c.Alignment.Alignment,
+					c.Size.Name,
+
+					c.Money,
+					c.Language,
+					c.Description,
+
+					new SkillsDto(
+						c.AcrobaticsDexProf, c.AcrobaticsDexExp,
+						c.AnimalHandlingWisProf, c.AnimalHandlingWisExp,
+						c.ArcanaIntProf, c.ArcanaIntExp,
+						c.AthleticsStrProf, c.AthleticsStrExp,
+						c.DeceptionChaProf, c.DeceptionChaExp,
+						c.HistoryIntProf, c.HistoryIntExp,
+						c.InsightWisProf, c.InsightWisExp,
+						c.IntimidationChaProf, c.IntimidationChaExp,
+						c.InvestigationIntProf, c.InvestigationIntExp,
+						c.MedicineWisProf, c.MedicineWisExp,
+						c.NatureWisProf, c.NatureWisExp,
+						c.PerceptionWisProf, c.PerceptionWisExp,
+						c.PerforanceChaProf, c.PerforanceChaExp,
+						c.PersuasionChaProf, c.PersuasionChaExp,
+						c.ReligionIntProf, c.ReligionIntExp,
+						c.SleightOfHandDexProf, c.SleightOfHandDexExp,
+						c.StealthDexProf, c.StealthDexExp,
+						c.SurvivalWisProf, c.SurvivalWisExp,
+						c.JackOfAllTrades
+					)
+				)).FirstOrDefaultAsync();
+
+			if (character is null)
+				return NotFound(_localizer["Character_NotFound"]);
 
 			if (!IsPrivileged && character.OwnerId != CurrentUserId)
 				return Forbid();
 
-			return Ok(ToDetail(character));
+			return Ok(character);
+			
 		}
-
 
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] CreateCharacterDto dto)
@@ -129,7 +168,7 @@ namespace Dnd_Api.Controllers
 				CurrentHp = dto.CurrentHp,
 				Speed = dto.Speed,
 				HitDiceType = dto.HitDiceType,
-				HitDiceNumber = dto.Level,
+				HitDiceNumber = dto.HitDiceNumber,
 				AlignmentId = dto.AlignmentId,
 				SizeId = dto.SizeId,
 				Money = dto.Money,
@@ -148,7 +187,7 @@ namespace Dnd_Api.Controllers
 		public async Task<IActionResult> Update(int id, [FromBody] UpdateCharacterDto dto)
 		{
 			var character = await _db.Dnd5Characters.FindAsync(id);
-			if (character is null) return NotFound("Character not found.");
+			if (character is null) return NotFound(_localizer["Character_NotFound"]);
 
 			if (!IsPrivileged && character.OwnerId != CurrentUserId)
 				return Forbid();
@@ -176,15 +215,29 @@ namespace Dnd_Api.Controllers
 		[HttpDelete("{id:int}")]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var character = await _db.Dnd5Characters.FindAsync(id);
-			if(character is null) return NotFound("Character not found.");
+			await using var tx = await _db.Database.BeginTransactionAsync();
 
-			if (!IsPrivileged && character.OwnerId != CurrentUserId)
-				return Forbid();
+			try
+			{
+				await _db.Dnd5Inventories
+					.Where(i => i.PlayerId == id)
+					.ExecuteDeleteAsync();
 
-			_db.Dnd5Characters.Remove(character);
-			await _db.SaveChangesAsync();
-			return NoContent();
+				var affected = await _db.Dnd5Characters
+					.Where(c => c.Id == id && (IsPrivileged || c.OwnerId == CurrentUserId))
+					.ExecuteDeleteAsync();
+
+				if(affected == 0)
+					return NotFound("Character not found or access denied.");
+
+				await tx.CommitAsync();
+				return NoContent();
+			}
+			catch
+			{
+				await tx.RollbackAsync();
+				throw;
+			}
 		}
 
 
@@ -194,7 +247,9 @@ namespace Dnd_Api.Controllers
 		public async Task<IActionResult> GetInventory(int id)
 		{
 			var character = await _db.Dnd5Characters.FindAsync(id);
-			if(character is null) return NotFound("Character not found.");
+
+			if(character is null)
+				return NotFound(_localizer["Character_NotFound"]);
 
 			if (!IsPrivileged && character.OwnerId != CurrentUserId)
 				return Forbid();
@@ -219,7 +274,9 @@ namespace Dnd_Api.Controllers
 		public async Task<IActionResult> AddItem(int id, int itemId)
 		{
 			var character = await _db.Dnd5Characters.FindAsync(id);
-			if (character is null) return NotFound("Character not found.");
+
+			if (character is null)
+				return NotFound(_localizer["Character_NotFound"]);
 
 			if (!IsPrivileged && character.OwnerId != CurrentUserId)
 				return Forbid();
@@ -239,7 +296,8 @@ namespace Dnd_Api.Controllers
 		public async Task<IActionResult> RemoveItem(int id, int itemId)
 		{
 			var character = await _db.Dnd5Characters.FindAsync(id);
-			if (character is null) return NotFound("Character not found.");
+			if (character is null)
+				return NotFound(_localizer["Character_NotFound"]);
 
 			if (!IsPrivileged && character.OwnerId != CurrentUserId)
 				return Forbid();

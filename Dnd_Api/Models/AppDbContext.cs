@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Dnd_Api.Models;
 
@@ -95,10 +92,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<MapSceneItem> MapSceneItems { get; set; }
 
     public virtual DbSet<MapToken> MapTokens { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;port=3306;database=dnd;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.32-mariadb"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -221,13 +214,19 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Dnd5Inventory>(entity =>
         {
-            entity.HasOne(d => d.Item).WithMany()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+            entity.HasKey(e => new { e.PlayerId, e.ItemId });
+
+            entity.HasOne(d => d.Item)
+                .WithMany()
+                .HasForeignKey(d => d.ItemId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_dnd5_inventory_item_id");
 
-            entity.HasOne(d => d.Player).WithMany()
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_dnd5_inventory_player_id");
+            entity.HasOne(d => d.Player)
+                .WithMany(p => p.Inventories)
+                .HasForeignKey(d => d.PlayerId)
+                .OnDelete(DeleteBehavior.Cascade)
+				.HasConstraintName("FK_dnd5_inventory_player_id");
         });
 
         modelBuilder.Entity<Dnd5Item>(entity =>

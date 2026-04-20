@@ -5,7 +5,7 @@
 		string Name,
 		string ClassName,
 		string RaceName,
-		uint Level,
+		int Level,
 		int CurrentHp,
 		uint MaxHp
 	);
@@ -17,7 +17,8 @@
 		int ClassId,
 		string ClassName,
 		int? SubclassId,
-		uint Level,
+		string? SubclassName,
+		int Level,
 		uint Strength,
 		uint Dexterity,
 		uint Constitution,
@@ -68,7 +69,7 @@
 		string Name,
 		int ClassId,
 		int? SubclassId,
-		uint Level,
+		int Level,
 		uint Strength,
 		uint Dexterity,
 		uint Constitution,
@@ -82,6 +83,7 @@
 		int CurrentHp,
 		uint Speed,
 		uint HitDiceType,
+		uint HitDiceNumber,
 		short AlignmentId,
 		short SizeId,
 		int Money,
@@ -91,7 +93,7 @@
 
 	public record UpdateCharacterDto(
 		string? Name,
-		uint? Level,
+		int? Level,
 		uint? Strength,
 		uint? Dexterity,
 		uint? Constitution,

@@ -1,4 +1,5 @@
 ﻿using Dnd_Api.DTO;
+using Dnd_Api.Helpers;
 using Dnd_Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace Dnd_Api.Controllers
 		{
 			var classes = await _db.Dnd5Classes
 				.Select(c => new ClassDto(
-					c.ClassId, c.ClassName, c.HitDie,
+					c.ClassId, c.ClassName.Capitalize(), c.HitDie,
 					c.ArmorProf, c.WeaponProf, c.ToolProf, c.SkillProf,
 					c.SavingThrowStr, c.SavingThrowDex, c.SavingThrowCon,
 					c.SavingThrowInt, c.SavingThrowWis, c.SavingThrowCha))

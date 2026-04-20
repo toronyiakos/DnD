@@ -1,4 +1,6 @@
-﻿using Dnd_Api.Models;
+﻿using Dnd_Api.ConfigModels;
+using Dnd_Api.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,18 +18,21 @@ namespace Dnd_Api.Services
 
 	public class JwtService : IJwtService
 	{
-		private readonly IConfiguration _config;
-		public JwtService(IConfiguration config)
+		private readonly JwtOptions _jwt;
+		public JwtService(IOptions<JwtOptions> jwtOptions)
 		{
-			_config = config;
+			_jwt = jwtOptions.Value;
 		}
 
 		public string GenerateToken(AccountUser user)
 		{
-			var jwtSettings = _config.GetSection("Jwt");
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
+			var key = new SymmetricSecurityKey(
+				Encoding.UTF8.GetBytes(_jwt.Secret)
+			);
+
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-			var expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiresInMinutes"]!));
+
+			var expires = DateTime.UtcNow.AddMinutes(_jwt.ExpiresInMinutes);
 
 			var roleName = user.Role?.Name ?? "user";
 
@@ -46,8 +51,8 @@ namespace Dnd_Api.Services
 
 
 			var token = new JwtSecurityToken(
-				issuer: jwtSettings["Issuer"],
-				audience: jwtSettings["Audience"],
+				issuer: _jwt.Issuer,
+				audience: _jwt.Audience,
 				claims: claims,
 				expires: expires,
 				signingCredentials: creds
